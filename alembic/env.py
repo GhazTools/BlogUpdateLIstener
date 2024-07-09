@@ -29,7 +29,7 @@ from utils.environment import Environment, EnvironmentVariableKeys
 # access to the values within the .ini file in use.
 
 
-def getUrl() -> str:
+def get_db_url() -> str:
     """
     A function to retrieve database url in a form that alembic can read
     """
@@ -45,7 +45,7 @@ def getUrl() -> str:
 config = context.config
 config.set_main_option(
     "sqlalchemy.url",
-    getUrl(),
+    get_db_url(),
 )
 
 # Interpret the config file for Python logging.
