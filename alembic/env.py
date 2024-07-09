@@ -1,9 +1,27 @@
+"""
+file_name = env.py
+Created On: 2024/07/09
+Lasted Updated: 2024/07/09
+Description: _FILL OUT HERE_
+Edit Log:
+2024/07/09
+    - Created file
+"""
+
+# STANDARD LIBRARY IMPORTS
 from logging.config import fileConfig
 
+# THIRD PARTY LIBRARY IMPORTS
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
+
+# LOCAL LIBRARY IMPORTS
+from database.database import BASE
+
+from database.models.blog_post import BlogPost
+from database.models.image import Image
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -18,7 +36,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = BASE.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -64,9 +82,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
