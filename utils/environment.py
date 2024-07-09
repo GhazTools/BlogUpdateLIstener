@@ -27,9 +27,7 @@ class EnvironmentVariableKeys(Enum):
 
 
 # Only runs on first import
-if __name__ == "__main__":
-    Environment.setup_environment(
-        EnvironmentVariableKeys,  # Keys
-        Path(__file__).resolve().parents[1]
-        / ".env",  # Path to env file, in project root
-    )
+Environment.setup_environment(
+    EnvironmentVariableKeys,  # Keys
+    Path(__file__).resolve().parents[1] / ".env",  # Path to env file, in project root
+)
