@@ -22,11 +22,31 @@ from database.database import BASE
 # Have to import all models so BASE picks up on it
 from database.models.blog_post import BlogPost
 from database.models.image import Image
+from utils.environment import Environment, EnvironmentVariableKeys
 
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
+
+
+def getUrl() -> str:
+    """
+    A function to retrieve database url in a form that alembic can read
+    """
+
+    url: str = Environment.get_environment_variable(
+        EnvironmentVariableKeys.DATABASE_URL
+    )
+    modified_url: str = url.replace("%", "%%")
+
+    return modified_url
+
+
 config = context.config
+config.set_main_option(
+    "sqlalchemy.url",
+    getUrl(),
+)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
