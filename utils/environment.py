@@ -26,6 +26,7 @@ class EnvironmentVariableKeys(Enum):
     DATABASE_URL = "DATABASE_URL"
 
 
+# Only runs on first import
 if __name__ == "__main__":
     Environment.setup_environment(
         EnvironmentVariableKeys,  # Keys
