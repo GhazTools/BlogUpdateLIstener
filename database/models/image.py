@@ -24,7 +24,7 @@ class Image(BASE):
     A model class for the images table
     """
 
-    __tablename__ = "images"
+    __tablename__ = "blog_images"
 
     image_name: Mapped[str] = mapped_column(
         String, primary_key=True, unique=True, nullable=False
