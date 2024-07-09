@@ -1,4 +1,4 @@
-# BlogUpdaterRoutine
+# BlogUpdater (im not sure if this will be a service yet or a kafka consumer or just a script)
 
 This project uses Alembic for database schema versioning, allowing for easy management of database migrations.
 
