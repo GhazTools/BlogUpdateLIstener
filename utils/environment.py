@@ -26,7 +26,9 @@ class EnvironmentVariableKeys(Enum):
     DATABASE_URL = "DATABASE_URL"
 
 
-Environment.setup_environment(
-    EnvironmentVariableKeys,  # Keys
-    Path(__file__).resolve().parents[1] / ".env",  # Path to env file, in project root
-)
+if __name__ == "__main__":
+    Environment.setup_environment(
+        EnvironmentVariableKeys,  # Keys
+        Path(__file__).resolve().parents[1]
+        / ".env",  # Path to env file, in project root
+    )
