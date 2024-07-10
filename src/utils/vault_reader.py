@@ -76,6 +76,19 @@ class VaultReader:
 
         return self._blog_posts_to_add
 
+    def reload_vault_reader(self: "VaultReader") -> None:
+        """
+        Reloads the vault reader
+        """
+
+        image_data: tuple[Images, Images] = self._extract_image_data()
+        self._images = image_data[0]
+        self._images_to_add = image_data[1]
+
+        blog_post_data: tuple[BlogPosts, BlogPosts] = self._extract_blog_posts_data()
+        self._blog_posts = blog_post_data[0]
+        self._blog_posts_to_add = blog_post_data[1]
+
     # PRIVATE METHODS START HERE
 
     def _extract_image_data(self: "VaultReader") -> tuple[Images, Images]:
