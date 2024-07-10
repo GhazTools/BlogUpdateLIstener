@@ -20,8 +20,6 @@ from alembic import context
 from database.database import BASE
 
 # Have to import all models so BASE picks up on it
-from database.models.blog_post import BlogPost
-from database.models.image import Image
 from utils.environment import Environment, EnvironmentVariableKeys
 
 
