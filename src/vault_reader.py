@@ -38,12 +38,42 @@ class VaultReader:
 
     def __init__(self: "VaultReader") -> None:
         image_data: tuple[Images, Images] = self._extract_image_data()
-        self.images = image_data[0]
-        self.images_to_add = image_data[1]
+        self._images = image_data[0]
+        self._images_to_add = image_data[1]
 
         blog_post_data: tuple[BlogPosts, BlogPosts] = self._extract_blog_posts_data()
-        self.blog_posts = blog_post_data[0]
-        self.blog_posts_to_add = blog_post_data[1]
+        self._blog_posts = blog_post_data[0]
+        self._blog_posts_to_add = blog_post_data[1]
+
+    @property
+    def images(self: "VaultReader") -> Images:
+        """
+        Return all images in the vault
+        """
+        return self._images
+
+    @property
+    def images_to_add(self: "VaultReader") -> Images:
+        """
+        Returns a list of images that are not in the database=
+        """
+
+        return self._images_to_add
+
+    @property
+    def blog_posts(self: "VaultReader") -> BlogPosts:
+        """
+        Return all blog posts in the vault
+        """
+        return self._blog_posts
+
+    @property
+    def blog_posts_to_add(self: "VaultReader") -> BlogPosts:
+        """
+        Returns a list of blog posts that are not in the database
+        """
+
+        return self._blog_posts_to_add
 
     # PRIVATE METHODS START HERE
 
