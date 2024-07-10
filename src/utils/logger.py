@@ -49,6 +49,7 @@ class AppLogger:
         """
         A method used to add a handler to the logger
         """
+
         logging_directory_path: Path = app_path / "logs"
 
         # Create the directory if it does not exist
@@ -72,6 +73,7 @@ class AppLogger:
         """
         A method used to setup the logging for the application
         """
+
         if AppLogger.__is_logging_setup:
             return
 
