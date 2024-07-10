@@ -10,6 +10,7 @@ Edit Log:
 
 # STANDARD LIBRARY IMPORTS
 from pathlib import Path
+from typing import Final
 
 # THIRD PARTY LIBRARY IMPORTS
 
@@ -27,7 +28,7 @@ class VaultReader:
     A class for reading an obsidian vault to manage blog posts
     """
 
-    vault_path: str = Environment.get_environment_variable(
+    VAULT_PATH: Final[str] = Environment.get_environment_variable(
         EnvironmentVariableKeys.VAULT_PATH
     )
 
@@ -40,7 +41,7 @@ class VaultReader:
         Extracts all images from the vault
         """
 
-        image_dir_path: Path = Path(self.vault_path) / "__IMAGES__"
+        image_dir_path: Path = Path(self.VAULT_PATH) / "__IMAGES__"
         images: Images = []
 
         for object_path in image_dir_path.iterdir():
