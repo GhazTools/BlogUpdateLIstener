@@ -18,4 +18,4 @@ from src.vault_reader import VaultReader
 
 if __name__ == "__main__":
     vault_reader = VaultReader()
-    print(vault_reader.extract_image_data())
+    # print(vault_reader.extract_image_data())

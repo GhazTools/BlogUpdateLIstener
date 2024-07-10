@@ -31,12 +31,15 @@ class VaultReader:
     VAULT_PATH: Final[str] = Environment.get_environment_variable(
         EnvironmentVariableKeys.VAULT_PATH
     )
+    IGNORE_FOLDERS: Final[list[str]] = [".git", ".obsidian"]
 
     def __init__(self: "VaultReader") -> None:
-        self.image_data: Images = []
+        self.image_data: Images = self._extract_image_data()
         self.blog_posts: BlogPosts = []
 
-    def extract_image_data(self: "VaultReader") -> Images:
+    # PRIVATE METHODS START HERE
+
+    def _extract_image_data(self: "VaultReader") -> Images:
         """
         Extracts all images from the vault
         """
@@ -77,3 +80,69 @@ class VaultReader:
             return False
 
         return True
+
+    def _extract_blog_posts(self: "VaultReader") -> BlogPosts:
+        """
+        Extracts all blog posts from the vault
+        """
+
+        image_dir_path: Path = Path(self.VAULT_PATH) / "__BLOG_POSTS__"
+        blog_posts: BlogPosts = []
+
+        for object_path in image_dir_path.iterdir():
+            # Each blog post is a directory
+            if object_path.is_file():
+                continue
+
+            post_name: str = object_path.name
+            description: str = self._get_post_description(object_path)
+            text: str = self._get_post_text(object_path)
+            released = False  # TODO: Check db for existance & check if released in db
+
+            blog_post: BlogPostModel = BlogPostModel(
+                post_name=post_name,
+                description=description,
+                text=text,
+                released=released,
+            )
+
+            blog_posts.append(blog_post)
+
+        return blog_posts
+
+    def _get_post_description(self: "VaultReader", post_path: Path) -> str:
+        """
+        Extracts the description of a blog post
+        """
+
+        description_path: Path = post_path / "description.md"
+
+        if not description_path.exists():
+            raise ValueError(f"Description file for {post_path.name} does not exist")
+
+        with open(description_path, "r", encoding="UTF-8") as description_file:
+            description: str = description_file.read()
+
+        if len(description) > 50:
+            raise ValueError(
+                f"Description for {post_path.name} is too long, max length is 50 characters"
+            )
+
+        return description
+
+    def _get_post_text(self: "VaultReader", post_path: Path) -> str:
+        """
+        Extracts the text of a blog post
+        """
+
+        text_path: Path = post_path / "text.md"
+
+        if not text_path.exists():
+            raise ValueError(f"Text file for {post_path.name} does not exist")
+
+        with open(text_path, "r", encoding="UTF-8") as text_file:
+            text: str = text_file.read()
+
+        return text
+
+    # PRIVATE METHODS END HERE
