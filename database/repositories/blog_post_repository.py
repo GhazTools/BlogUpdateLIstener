@@ -77,3 +77,63 @@ class BlogPostRepository:
             query = query.filter(BlogPost.released == filters.released)
 
         return query.all()
+
+    def insert_blog_post(self: "BlogPostRepository", blog_post: BlogPostModel) -> None:
+        """
+        Insert a new blog post into the database.
+        """
+
+        if self.check_if_exists(blog_post.post_name):
+            raise ValueError(
+                f"Blog post with name {blog_post.post_name} already exists"
+            )
+
+        self.session.add(BlogPost(blog_post=blog_post))
+        self.session.commit()
+
+    def check_if_exists(self: "BlogPostRepository", blog_post_name: str) -> bool:
+        """
+        Check if a blog post with the given name exists in the database.
+        """
+
+        return (
+            self.session.query(BlogPost)
+            .filter(BlogPost.post_name == blog_post_name)
+            .count()
+            > 0
+        )
+
+    def check_if_released(self: "BlogPostRepository", blog_post_name: str) -> bool:
+        """
+        Check if a blog post with the given name has been released.
+        """
+
+        blog_post: BlogPost | None = (
+            self.session.query(BlogPost)
+            .filter(BlogPost.image_name == blog_post_name)
+            .first()
+        )
+
+        if blog_post is None:
+            raise ValueError(f"Blog post not found: {blog_post_name}")
+
+        return blog_post.released
+
+    def update_release(
+        self: "BlogPostRepository", post_name: str, release: bool
+    ) -> bool:
+        """
+        Update the release status of a blog post.
+        """
+
+        blog_post: BlogPost | None = (
+            self.session.query(BlogPost).filter(BlogPost.post_name == post_name).first()
+        )
+
+        if blog_post is None:
+            raise ValueError(f"Blog post not found: {post_name}")
+
+        blog_post.released = release
+        self.session.commit()
+
+        return True
