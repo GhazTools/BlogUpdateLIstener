@@ -119,6 +119,42 @@ class BlogPostRepository:
 
         return blog_post.released
 
+    def update_description(self, blog_post_name: str, description: str) -> bool:
+        """
+        Update the description of a blog post.
+        """
+
+        blog_post: BlogPost | None = (
+            self.session.query(BlogPost)
+            .filter(BlogPost.post_name == blog_post_name)
+            .first()
+        )
+
+        if blog_post is None:
+            raise ValueError(f"Blog post not found: {blog_post_name}")
+
+        blog_post.description = description
+        self.session.commit()
+
+        return True
+
+    def update_text(self: "BlogPostRepository", post_name: str, text: str) -> bool:
+        """
+        Update the text of a blog post.
+        """
+
+        blog_post: BlogPost | None = (
+            self.session.query(BlogPost).filter(BlogPost.post_name == post_name).first()
+        )
+
+        if blog_post is None:
+            raise ValueError(f"Blog post not found: {post_name}")
+
+        blog_post.text = text
+        self.session.commit()
+
+        return True
+
     def update_release(
         self: "BlogPostRepository", post_name: str, release: bool
     ) -> bool:
