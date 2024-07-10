@@ -9,6 +9,7 @@ Edit Log:
 """
 
 # STANDARD LIBRARY IMPORTS
+from logging import Logger
 
 # THIRD PARTY LIBRARY IMPORTS
 from sanic import Sanic
@@ -16,6 +17,7 @@ from sanic import Sanic
 # LOCAL LIBRARY IMPORTS
 from src.routes.blueprints import BLUEPRINTS
 
+from src.utils.logger import AppLogger
 from src.utils.middleware import Middleware
 from src.utils.vault_reader import VaultReader
 from src.utils.tasks import task_reload_vault_reader
@@ -29,11 +31,16 @@ class AppInstantiator:
     def __init__(self: "AppInstantiator") -> None:
         self._app = Sanic("BlogUpdaterSvc")
 
+        logger: Logger = AppLogger.get_logger()
+        logger.info("Attempting to start the application")
+
         # Register objects
         self._register_globals()
         self._register_middleware()
         self._register_blueprints()
         self._register_tasks()
+
+        logger.info("Finished setting up the applicaiton")
 
     # PROPERTIES START HERE
 
