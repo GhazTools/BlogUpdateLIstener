@@ -16,7 +16,8 @@ from sqlalchemy.orm import mapped_column, Mapped
 # THIRD PARTY LIBRARY IMPORTS
 
 # LOCAL LIBRARY IMPORTS
-from database.database import BASE
+from src.database.database import BASE
+
 from src.models.blog_post_model import BlogPostModel
 
 

@@ -14,8 +14,9 @@ Edit Log:
 from sqlalchemy.orm import Session, Query
 
 # LOCAL LIBRARY IMPORTS
-from database.database import SESSION_MAKER
-from database.models.blog_post import BlogPost
+from src.database.database import SESSION_MAKER
+from src.database.models.blog_post import BlogPost
+
 from src.models.blog_post_model import BlogPostModel, BlogPostFilterModel
 
 

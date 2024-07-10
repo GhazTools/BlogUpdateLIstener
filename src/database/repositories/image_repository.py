@@ -14,8 +14,9 @@ Edit Log:
 from sqlalchemy.orm import Session, Query
 
 # LOCAL LIBRARY IMPORTS
-from database.database import SESSION_MAKER
-from database.models.image import Image
+from src.database.database import SESSION_MAKER
+from src.database.models.image import Image
+
 from src.models.image_model import ImageModel, ImageFilterModel
 
 

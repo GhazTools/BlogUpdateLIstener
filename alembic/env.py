@@ -17,10 +17,12 @@ from sqlalchemy import pool
 from alembic import context
 
 # LOCAL LIBRARY IMPORTS
-from database.database import BASE
+from src.database.database import BASE
+from src.database.models.blog_post import BlogPost
+from src.database.models.image import Image
 
 # Have to import all models so BASE picks up on it
-from utils.environment import Environment, EnvironmentVariableKeys
+from src.utils.environment import Environment, EnvironmentVariableKeys
 
 
 # this is the Alembic Config object, which provides

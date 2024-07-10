@@ -16,7 +16,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.engine.base import Engine
 
 # LOCAL LIBRARY IMPORTS
-from utils.environment import Environment, EnvironmentVariableKeys
+from src.utils.environment import Environment, EnvironmentVariableKeys
 
 
 def get_engine() -> Engine:

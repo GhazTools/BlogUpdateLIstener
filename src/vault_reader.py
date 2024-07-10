@@ -15,12 +15,13 @@ from typing import Final
 # THIRD PARTY LIBRARY IMPORTS
 
 # LOCAL LIBRARY IMPORTS
-from database.repositories.image_repository import ImageRepository
-from database.repositories.blog_post_repository import BlogPostRepository
+from src.database.repositories.image_repository import ImageRepository
+from src.database.repositories.blog_post_repository import BlogPostRepository
 
 from src.models.image_model import ImageModel
 from src.models.blog_post_model import BlogPostModel
-from utils.environment import Environment, EnvironmentVariableKeys
+
+from src.utils.environment import Environment, EnvironmentVariableKeys
 
 Images = list[ImageModel]
 BlogPosts = list[BlogPostModel]
