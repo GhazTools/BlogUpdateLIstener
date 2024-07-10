@@ -11,10 +11,12 @@ Edit Log:
 # STANDARD LIBRARY IMPORTS
 
 # THIRD PARTY LIBRARY IMPORTS
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 
 # LOCAL LIBRARY IMPORTS
 from database.database import SESSION_MAKER
+from database.models.blog_post import BlogPost
+from src.models.blog_post_model import BlogPostModel, BlogPostFilterModel
 
 
 class BlogPostRepository:
@@ -50,3 +52,28 @@ class BlogPostRepository:
         """
 
         self.session.close()
+
+    def get_blog_posts(
+        self: "BlogPostRepository", filters: BlogPostFilterModel
+    ) -> list[BlogPost]:
+        """
+        Get all blog posts from the database.
+
+        Returns:
+        """
+
+        query: Query = self.session.query(BlogPost)
+
+        if filters.post_name is not None:
+            query = query.filter(BlogPost.post_name == filters.post_name)
+
+        if filters.description is not None:
+            query = query.filter(BlogPost.description.ilike(f"%{filters.description}%"))
+
+        if filters.text is not None:
+            query = query.filter(BlogPost.text.ilike(f"%{filters.text}%"))
+
+        if filters.released is not None:
+            query = query.filter(BlogPost.released == filters.released)
+
+        return query.all()
