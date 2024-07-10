@@ -52,6 +52,16 @@ class ImageRepository:
 
         self.session.close()
 
+    def get_images(self: "ImageRepository") -> list[Image]:
+        """
+        Get all images from the database.
+
+        Returns:
+            A list of all images in the database.
+        """
+
+        return self.session.query(Image).all()
+
     def insert_image(self: "ImageRepository", image: Image) -> None:
         """
         Insert a new image into the database.
