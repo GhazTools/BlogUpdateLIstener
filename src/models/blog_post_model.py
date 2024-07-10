@@ -31,3 +31,19 @@ class BlogPostModel(BaseModel):
     released: bool = Field(
         default=False, description="Flag indicating if the blog post is released"
     )
+
+
+class BlogPostFilterModel(BaseModel):
+    """
+    A pydantic model for filtering blog post
+    """
+
+    post_name: str = Field(None, description="The name of the blog post")
+    description: str = Field(
+        None,
+        description="A short description of the blog post does not need to be exact",
+    )
+    text: str = Field(None, description="Text to search for in the blog post")
+    released: bool = Field(
+        None, description="Flag indicating if the blog post is released"
+    )
