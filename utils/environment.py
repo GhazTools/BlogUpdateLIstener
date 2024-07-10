@@ -24,6 +24,7 @@ class EnvironmentVariableKeys(Enum):
     """
 
     DATABASE_URL = "DATABASE_URL"
+    VAULT_PATH = "VAULT_PATH"
 
 
 # Only runs on first import
