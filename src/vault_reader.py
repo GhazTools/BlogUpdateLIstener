@@ -16,6 +16,8 @@ from typing import Final
 
 # LOCAL LIBRARY IMPORTS
 from database.repositories.image_repository import ImageRepository
+from database.repositories.blog_post_repository import BlogPostRepository
+
 from src.models.image_model import ImageModel
 from src.models.blog_post_model import BlogPostModel
 from utils.environment import Environment, EnvironmentVariableKeys
@@ -39,7 +41,9 @@ class VaultReader:
         self.images = image_data[0]
         self.images_to_add = image_data[1]
 
-        self.blog_posts: BlogPosts = []
+        blog_post_data: tuple[BlogPosts, BlogPosts] = self._extract_blog_posts_data()
+        self.blog_posts = blog_post_data[0]
+        self.blog_posts_to_add = blog_post_data[1]
 
     # PRIVATE METHODS START HERE
 
@@ -92,34 +96,41 @@ class VaultReader:
 
         return True
 
-    def _extract_blog_posts(self: "VaultReader") -> BlogPosts:
+    def _extract_blog_posts_data(self: "VaultReader") -> tuple[BlogPosts, BlogPosts]:
         """
         Extracts all blog posts from the vault
         """
 
         image_dir_path: Path = Path(self.VAULT_PATH) / "__BLOG_POSTS__"
         blog_posts: BlogPosts = []
+        blog_posts_to_add: BlogPosts = []
 
-        for object_path in image_dir_path.iterdir():
-            # Each blog post is a directory
-            if object_path.is_file():
-                continue
+        with BlogPostRepository() as repository:
+            for object_path in image_dir_path.iterdir():
+                # Each blog post is a directory
+                if object_path.is_file():
+                    continue
 
-            post_name: str = object_path.name
-            description: str = self._get_post_description(object_path)
-            text: str = self._get_post_text(object_path)
-            released = False  # TODO: Check db for existance & check if released in db
+                post_name: str = object_path.name
+                description: str = self._get_post_description(object_path)
+                text: str = self._get_post_text(object_path)
 
-            blog_post: BlogPostModel = BlogPostModel(
-                post_name=post_name,
-                description=description,
-                text=text,
-                released=released,
-            )
+                post_in_db = repository.check_if_exists(post_name)
+                released = post_in_db and repository.check_if_released(post_name)
 
-            blog_posts.append(blog_post)
+                blog_post: BlogPostModel = BlogPostModel(
+                    post_name=post_name,
+                    description=description,
+                    text=text,
+                    released=released,
+                )
 
-        return blog_posts
+                blog_posts.append(blog_post)
+
+                if not post_in_db:
+                    blog_posts_to_add.append(blog_post)
+
+        return (blog_posts, blog_posts_to_add)
 
     def _get_post_description(self: "VaultReader", post_path: Path) -> str:
         """
