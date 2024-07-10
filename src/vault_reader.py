@@ -15,6 +15,7 @@ from typing import Final
 # THIRD PARTY LIBRARY IMPORTS
 
 # LOCAL LIBRARY IMPORTS
+from database.repositories.image_repository import ImageRepository
 from src.models.image_model import ImageModel
 from src.models.blog_post_model import BlogPostModel
 from utils.environment import Environment, EnvironmentVariableKeys
@@ -34,37 +35,47 @@ class VaultReader:
     IGNORE_FOLDERS: Final[list[str]] = [".git", ".obsidian"]
 
     def __init__(self: "VaultReader") -> None:
-        self.image_data: Images = self._extract_image_data()
+        image_data: tuple[Images, Images] = self._extract_image_data()
+        self.images = image_data[0]
+        self.images_to_add = image_data[1]
+
         self.blog_posts: BlogPosts = []
 
     # PRIVATE METHODS START HERE
 
-    def _extract_image_data(self: "VaultReader") -> Images:
+    def _extract_image_data(self: "VaultReader") -> tuple[Images, Images]:
         """
         Extracts all images from the vault
+
+        The first list is all images, and the second is images that need to be added to the database
         """
 
         image_dir_path: Path = Path(self.VAULT_PATH) / "__IMAGES__"
         images: Images = []
+        images_to_add: Images = []
 
         for object_path in image_dir_path.iterdir():
             if not self._validate_image_path(object_path):
                 continue
 
-            with open(object_path, "rb") as image_file:
-                image_name: str = object_path.name
-                image_data: bytes = image_file.read()
-                released = (
-                    False  # TODO: Check db for existance & check if released in db
-                )
+            with ImageRepository() as repository:
+                with open(object_path, "rb") as image_file:
+                    image_name: str = object_path.name
+                    image_data: bytes = image_file.read()
 
-                image: ImageModel = ImageModel(
-                    image_name=image_name, image_data=image_data, released=released
-                )
+                    image_in_db = repository.check_if_exists(image_name)
+                    released = image_in_db and repository.check_if_released(image_name)
 
-                images.append(image)
+                    image: ImageModel = ImageModel(
+                        image_name=image_name, image_data=image_data, released=released
+                    )
 
-        return images
+                    images.append(image)
+
+                    if not image_in_db:
+                        images_to_add.append(image)
+
+        return (images, images_to_add)
 
     def _validate_image_path(self, object_path: Path) -> bool:
         """
