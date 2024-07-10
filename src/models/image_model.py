@@ -26,3 +26,12 @@ class ImageModel(BaseModel):
     released: bool = Field(
         default=False, description="Flag indicating if the image is released"
     )
+
+
+class ImageFilterModel(BaseModel):
+    """
+    A pydantic model for filtering images
+    """
+
+    image_name: str = Field(None, description="The name of the image")
+    released: bool = Field(None, description="Flag indicating if the image is released")

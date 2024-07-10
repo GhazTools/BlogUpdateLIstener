@@ -11,11 +11,12 @@ Edit Log:
 # STANDARD LIBRARY IMPORTS
 
 # THIRD PARTY LIBRARY IMPORTS
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 
 # LOCAL LIBRARY IMPORTS
 from database.database import SESSION_MAKER
 from database.models.image import Image
+from src.models.image_model import ImageModel, ImageFilterModel
 
 
 class ImageRepository:
@@ -52,7 +53,7 @@ class ImageRepository:
 
         self.session.close()
 
-    def get_images(self: "ImageRepository") -> list[Image]:
+    def get_images(self: "ImageRepository", filters: ImageFilterModel) -> list[Image]:
         """
         Get all images from the database.
 
@@ -60,9 +61,19 @@ class ImageRepository:
             A list of all images in the database.
         """
 
-        return self.session.query(Image).all()
+        query: Query = self.session.query(Image)
 
-    def insert_image(self: "ImageRepository", image: Image) -> None:
+        # TODO: Create an extendable filter model
+
+        if filters.image_name is not None:
+            query = query.filter(Image.image_name == filters.image_name)
+
+        if filters.released is not None:
+            query = query.filter(Image.released == filters.released)
+
+        return query.all()
+
+    def insert_image(self: "ImageRepository", image: ImageModel) -> None:
         """
         Insert a new image into the database.
 
@@ -73,7 +84,7 @@ class ImageRepository:
         if self.check_if_exists(image.image_name):
             raise ValueError("Image already exists")
 
-        self.session.add(image)
+        self.session.add(Image(image))
         self.session.commit()
 
     def check_if_exists(self: "ImageRepository", image_name: str) -> bool:
@@ -102,12 +113,14 @@ class ImageRepository:
             True if the image has been released, False otherwise.
         """
 
-        return (
-            self.session.query(Image)
-            .filter(Image.image_name == image_name, Image.released)
-            .count()
-            > 0
+        image: Image | None = (
+            self.session.query(Image).filter(Image.image_name == image_name).first()
         )
+
+        if image is None:
+            raise ValueError(f"Image not found: {image_name}")
+
+        return image.released
 
     def update_release(self: "ImageRepository", image_name: str, release: bool) -> bool:
         """
