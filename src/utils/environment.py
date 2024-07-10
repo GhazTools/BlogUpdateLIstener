@@ -25,10 +25,11 @@ class EnvironmentVariableKeys(Enum):
 
     DATABASE_URL = "DATABASE_URL"
     VAULT_PATH = "VAULT_PATH"
+    TOKEN_GRANTER_URL = "TOKEN_GRANTER_URL"
 
 
 # Only runs on first import
 Environment.setup_environment(
     EnvironmentVariableKeys,  # Keys
-    Path(__file__).resolve().parents[1] / ".env",  # Path to env file, in project root
+    Path(__file__).resolve().parents[2] / ".env",  # Path to env file, in project root
 )
