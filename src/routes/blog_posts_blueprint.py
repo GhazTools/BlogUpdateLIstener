@@ -49,7 +49,9 @@ async def base_route(
 
         blog_post = blog_posts[0]
 
-    return HTTPResponse(body=blog_post.json(), content_type="application/json")
+    return HTTPResponse(
+        body=blog_post.to_model().json(), content_type="application/json"
+    )
 
 
 @BLOG_POSTS_BLUEPRINT.route("/getBlogPost", methods=["POST"])
