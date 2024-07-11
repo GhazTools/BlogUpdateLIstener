@@ -25,7 +25,10 @@ IMAGES_BLUEPRINT = Blueprint("image_blueprint", url_prefix="/images")
 
 
 @IMAGES_BLUEPRINT.route("/<image_name>", methods=["GET"])
-async def base_route(request: Request, image_name: str) -> HTTPResponse:
+async def base_route(
+    _request: Request,
+    image_name: str,
+) -> HTTPResponse:
     """
     Gets images from the database that have been released
     """
