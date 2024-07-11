@@ -19,7 +19,7 @@ from pydantic import ValidationError
 from src.database.models.image import Image
 from src.database.repositories.image_repository import ImageRepository
 
-from src.models.image_model import ImageFilterModel
+from src.models.image_model import ImageFilterModel, ImageReleaseUpdateRequest
 
 IMAGES_BLUEPRINT = Blueprint("image_blueprint", url_prefix="/images")
 
@@ -70,3 +70,27 @@ async def get_image(request: Request) -> HTTPResponse:
 
     mime_type = "image/jpeg" if image.image_name.endswith(".jpg") else "image/png"
     return HTTPResponse(body=image.image_data, content_type=mime_type)
+
+
+@IMAGES_BLUEPRINT.route("/updateImageRelease", methods=["POST"])
+async def update_image_release(request: Request) -> HTTPResponse:
+    """
+    Updates the release status of an image
+    """
+    try:
+        image_release_update_request: ImageReleaseUpdateRequest = (
+            ImageReleaseUpdateRequest(**request.json)
+        )
+    except ValidationError:
+        return HTTPResponse("Invalid request body", status=400)
+
+    with ImageRepository() as repository:
+        try:
+            repository.update_release(
+                image_release_update_request.image_name,
+                image_release_update_request.released,
+            )
+        except ValueError:
+            return HTTPResponse("Image not found", status=404)
+
+    return HTTPResponse("Image release status updated", status=200)

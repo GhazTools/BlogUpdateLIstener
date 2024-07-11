@@ -38,3 +38,12 @@ class ImageFilterModel(BaseModel):
     released: Optional[bool] = Field(
         None, description="Flag indicating if the image is released"
     )
+
+
+class ImageReleaseUpdateRequest(BaseModel):
+    """
+    A pydantic model for updating the release status of an image
+    """
+
+    image_name: str = Field(description="The name of the image")
+    released: bool = Field(description="Flag indicating if the image is released")
