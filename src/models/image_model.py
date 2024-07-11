@@ -9,6 +9,7 @@ Edit Log:
 """
 
 # STANDARD LIBRARY IMPORTS
+from typing import Optional
 
 # THIRD PARTY LIBRARY IMPORTS
 from pydantic import BaseModel, Field
@@ -33,5 +34,7 @@ class ImageFilterModel(BaseModel):
     A pydantic model for filtering images
     """
 
-    image_name: str = Field(None, description="The name of the image")
-    released: bool = Field(None, description="Flag indicating if the image is released")
+    image_name: Optional[str] = Field(None, description="The name of the image")
+    released: Optional[bool] = Field(
+        None, description="Flag indicating if the image is released"
+    )

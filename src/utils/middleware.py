@@ -16,7 +16,7 @@ from sanic.request import Request
 from sanic.response import text, HTTPResponse
 from sanic.log import logger
 from pydantic import ValidationError
-from token_granter_wrapper.token_granter_bindings import TokenGranter  # pylint: disable=E0611 Exists binding just needs to be updated
+from token_granter_wrapper.token_granter_bindings import TokenGranter  # pylint: disable=E0611
 from metric_producer.metric_producer import MetricProducer
 
 # LOCAL LIBRARY IMPORTS
