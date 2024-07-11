@@ -25,7 +25,7 @@ ENTRY_POINT_BLUEPRINT = Blueprint("entry_point_blueprint", url_prefix="/")
 
 
 @ENTRY_POINT_BLUEPRINT.get("/")
-async def entry_point(request: Request) -> HTTPResponse:  # pylint: disable=unused-argument
+async def entry_point(_request: Request) -> HTTPResponse:
     """
     A request to validate that the app is running
     """
