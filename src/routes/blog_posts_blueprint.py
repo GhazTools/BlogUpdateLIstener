@@ -26,7 +26,7 @@ from src.models.blog_post_model import BlogPostFilterModel, BlogPostReleaseUpdat
 BLOG_POSTS_BLUEPRINT = Blueprint("blog_posts_blueprint", url_prefix="/blogPosts")
 
 
-@BLOG_POSTS_BLUEPRINT.get("/<post_namee>", methods=["GET"])
+@BLOG_POSTS_BLUEPRINT.get("/<post_namee>")
 async def base_route(
     _request: Request,
     post_name: str,
