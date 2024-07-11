@@ -18,7 +18,7 @@ from sanic.response import text, HTTPResponse
 
 # LOCAL LIBRARY IMPORTS
 from src.routes.image_blueprint import IMAGES_BLUEPRINT
-from src.routes.blog_posts_model import BLOG_POSTS_BLUEPRINT
+from src.routes.blog_posts_blueprint import BLOG_POSTS_BLUEPRINT
 
 
 ENTRY_POINT_BLUEPRINT = Blueprint("entry_point_blueprint", url_prefix="/")

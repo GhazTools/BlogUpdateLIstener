@@ -12,7 +12,7 @@ Edit Log:
 
 # THIRD PARTY LIBRARY IMPORTS
 from sanic import Blueprint, Request
-from sanic.response import HTTPResponse
+from sanic.response import HTTPResponse, json
 from pydantic import ValidationError
 
 # LOCAL LIBRARY IMPORTS
@@ -61,18 +61,19 @@ async def get_image(request: Request) -> HTTPResponse:
     except ValidationError:
         return HTTPResponse("Invalid request body", status=400)
 
-    image: Image | None = None
+    images: list[Image] | None = None
 
     with ImageRepository() as repository:
-        images: list[Image] = repository.get_images(image_filters)
+        images = repository.get_images(image_filters)
 
         if not images:
             return HTTPResponse("Image not found", status=404)
 
-        image = images[0]
-
-    mime_type = "image/jpeg" if image.image_name.endswith(".jpg") else "image/png"
-    return HTTPResponse(body=image.image_data, content_type=mime_type)
+    return json(
+        {
+            "images": [image.to_model().json() for image in images],
+        }
+    )
 
 
 @IMAGES_BLUEPRINT.route("/updateImageRelease", methods=["POST"])

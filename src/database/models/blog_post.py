@@ -35,10 +35,28 @@ class BlogPost(BASE):
     text: Mapped[str] = mapped_column(Text, nullable=False)
     released: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     release_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    last_updated: Mapped[DateTime] = mapped_column(DateTime, nullable=True)
+    last_updated: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     def __init__(self, blog_post: BlogPostModel):
         self.post_name = blog_post.post_name
         self.description = blog_post.description
         self.text = blog_post.text
         self.released = blog_post.released
+
+    def to_model(self) -> BlogPostModel:
+        """
+        Converts the blog post to a dictionary
+        """
+
+        return BlogPostModel(
+            post_name=self.post_name,
+            description=self.description,
+            text=self.text,
+            released=self.released,
+            release_date=datetime.strftime(self.release_date, "%Y-%m-%d %H:%M")
+            if self.release_date
+            else None,
+            last_updated=datetime.strftime(self.last_updated, "%Y-%m-%d %H:%M")
+            if self.last_updated
+            else None,
+        )

@@ -37,3 +37,14 @@ class Image(BASE):
         self.image_name = image.image_name
         self.image_data = image.image_data
         self.released = image.released
+
+    def to_model(self) -> ImageModel:
+        """
+        Converts the image to a dictionary
+        """
+
+        return ImageModel(
+            image_name=self.image_name,
+            image_data=self.image_data,
+            released=self.released,
+        )

@@ -32,6 +32,12 @@ class BlogPostModel(BaseModel):
     released: bool = Field(
         default=False, description="Flag indicating if the blog post is released"
     )
+    release_date: Optional[str] = Field(
+        None, description="The release date of the blog post"
+    )
+    last_updated: Optional[str] = Field(
+        None, description="The last update date of the blog post"
+    )
 
 
 class BlogPostFilterModel(BaseModel):
@@ -48,3 +54,12 @@ class BlogPostFilterModel(BaseModel):
     released: Optional[bool] = Field(
         None, description="Flag indicating if the blog post is released"
     )
+
+
+class BlogPostReleaseUpdateRequest(BaseModel):
+    """
+    A pydantic model for updating the release status of a blog post
+    """
+
+    post_name: str = Field(description="The name of the blog post")
+    released: bool = Field(description="Flag indicating if the blog post is released")
