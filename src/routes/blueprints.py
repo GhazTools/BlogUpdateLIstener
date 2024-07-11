@@ -9,6 +9,7 @@ Edit Log:
 """
 
 # STANDARD LIBRARY IMPORTS
+from typing import Final
 
 # THIRD PARTY LIBRARY IMPORTS
 from sanic import Blueprint
@@ -17,6 +18,7 @@ from sanic.response import text, HTTPResponse
 
 # LOCAL LIBRARY IMPORTS
 from src.routes.image_blueprint import IMAGES_BLUEPRINT
+from src.routes.blog_posts_model import BLOG_POSTS_BLUEPRINT
 
 
 ENTRY_POINT_BLUEPRINT = Blueprint("entry_point_blueprint", url_prefix="/")
@@ -31,4 +33,8 @@ async def entry_point(request: Request) -> HTTPResponse:  # pylint: disable=unus
     return text("App is currently running.")
 
 
-BLUEPRINTS: list[Blueprint] = [ENTRY_POINT_BLUEPRINT, IMAGES_BLUEPRINT]
+BLUEPRINTS: Final[list[Blueprint]] = [
+    ENTRY_POINT_BLUEPRINT,
+    IMAGES_BLUEPRINT,
+    BLOG_POSTS_BLUEPRINT,
+]
