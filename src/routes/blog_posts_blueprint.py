@@ -1,5 +1,5 @@
 """
-file_name = blog_posts_model.py
+file_name = blog_posts_blueprint.py
 Created On: 2024/07/10
 Lasted Updated: 2024/07/10
 Description: _FILL OUT HERE_
