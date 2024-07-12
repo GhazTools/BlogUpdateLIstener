@@ -22,6 +22,7 @@ from metric_producer.metric_producer import MetricProducer
 # LOCAL LIBRARY IMPORTS
 from src.models.base_request_model import BaseRequest
 from src.utils.environment import Environment, EnvironmentVariableKeys
+from src.utils.logger import AppLogger
 
 
 class Middleware:
@@ -43,16 +44,16 @@ class Middleware:
         """
         A function to process a request made to the service before passing it on to the intended endpoint
         """
-
+        
+        logger = AppLogger.get_logger()
         logger.info("request received %s", request.path)
 
         if request.method == "POST":
-            token_granter = request.app.config["TOKEN_GRANTER"]
+            token_granter = self._token_granter
+            
             try:
-                # Parse request body into Pydantic model
                 user_token = BaseRequest(**request.json)
 
-                # If needed, use user_token.user and user_token.token for further processing
                 is_valid: bool = token_granter.validate_token(
                     user_token.user, user_token.token
                 )
@@ -61,13 +62,18 @@ class Middleware:
                     raise ValueError("Inavlid token")
 
             except ValidationError as e:
-                print("Invalid error", e)
+                logger.info("Validation error error %s", e)
+                
                 return text("Unsupported endpoint.")
             except ValueError as e:
-                print("Invalid token", e)
+                logger.info("Invalid token %s", e)
+                return text("Unsupported endpoint.")
+            
+            except Exception as e:
+                logger.info("FAILED TO VALIDATE FOR SOME OTHER REASON %s",e)
                 return text("Unsupported endpoint.")
 
-        print(request, request.path)
+
         return None
 
     async def response_middleware(
@@ -76,8 +82,7 @@ class Middleware:
         """
         A function to handle the response after it is returned from an endpoint
         """
-
-        print(request, response)
-        print("success")
+    
+        AppLogger.get_logger().info("response sent")
 
     # PRIVATE METHODS HERE

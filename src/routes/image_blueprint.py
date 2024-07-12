@@ -28,6 +28,8 @@ from src.models.image_model import (
 )
 
 from src.utils.vault_reader import VaultReader
+from src.utils.logger import AppLogger
+
 
 IMAGES_BLUEPRINT = Blueprint("image_blueprint", url_prefix="/images")
 
@@ -61,10 +63,14 @@ async def base_route(
 async def get_image_status(request: Request) -> HTTPResponse:
     """
     Checks if an image is published
+    
     """
+    logger = AppLogger.get_logger()
+    
     try:
         image_status_request: ImageStatusRequest = ImageStatusRequest(**request.json)
-    except ValidationError:
+    except ValidationError as e:
+        logger.info("Could not valid image status request %s", e)
         return HTTPResponse("Invalid request body", status=400)
 
     published = False
@@ -75,7 +81,7 @@ async def get_image_status(request: Request) -> HTTPResponse:
             image_name=image_status_request.image_name, released=None
         )
         images: list[Image] = repository.get_images(image_filters)
-
+        
         if images:
             published = True
             released = images[0].released
