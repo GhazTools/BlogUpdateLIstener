@@ -19,7 +19,13 @@ from pydantic import ValidationError
 from src.database.models.image import Image
 from src.database.repositories.image_repository import ImageRepository
 
-from src.models.image_model import ImageFilterModel, ImageReleaseUpdateRequest
+from src.models.image_model import (
+    ImageFilterModel,
+    ImageReleaseUpdateRequest,
+    ImageReleasePublishRequest,
+)
+
+from src.utils.vault_reader import VaultReader
 
 IMAGES_BLUEPRINT = Blueprint("image_blueprint", url_prefix="/images")
 
@@ -47,6 +53,35 @@ async def base_route(
 
     mime_type = "image/jpeg" if image.image_name.endswith(".jpg") else "image/png"
     return HTTPResponse(body=image.image_data, content_type=mime_type)
+
+
+@IMAGES_BLUEPRINT.route("/publish", methods=["POST"])
+async def publish_image(request: Request) -> HTTPResponse:
+    """
+    Publishes an image
+    """
+    try:
+        image_publish_request: ImageReleasePublishRequest = ImageReleasePublishRequest(
+            **request.json
+        )
+    except ValidationError:
+        return HTTPResponse("Invalid request body", status=400)
+
+    vault_reader: VaultReader = request.app.config["VAULT_READER"]
+    image_found: bool = False
+
+    for image in vault_reader.images_to_add:
+        if image.image_name == image_publish_request.image_name:
+            with ImageRepository() as repository:
+                repository.insert_image(image)
+
+            image_found = True
+            break
+
+    if not image_found:
+        return HTTPResponse("Image not found", status=404)
+
+    return HTTPResponse("Image published", status=200)
 
 
 @IMAGES_BLUEPRINT.route("/getImage", methods=["POST"])

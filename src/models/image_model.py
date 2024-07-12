@@ -47,3 +47,11 @@ class ImageReleaseUpdateRequest(BaseModel):
 
     image_name: str = Field(description="The name of the image")
     released: bool = Field(description="Flag indicating if the image is released")
+
+
+class ImageReleasePublishRequest(BaseModel):
+    """
+    A pydantic model for publishing an image
+    """
+
+    image_name: str = Field(description="The name of the image")
