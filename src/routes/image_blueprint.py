@@ -23,6 +23,8 @@ from src.models.image_model import (
     ImageFilterModel,
     ImageReleaseUpdateRequest,
     ImageReleasePublishRequest,
+    ImageStatusRequest,
+    ImageStatusResponse,
 )
 
 from src.utils.vault_reader import VaultReader
@@ -53,6 +55,32 @@ async def base_route(
 
     mime_type = "image/jpeg" if image.image_name.endswith(".jpg") else "image/png"
     return HTTPResponse(body=image.image_data, content_type=mime_type)
+
+
+@IMAGES_BLUEPRINT.route("/imageStatus", methods=["POST"])
+async def get_image_status(request: Request) -> HTTPResponse:
+    """
+    Checks if an image is published
+    """
+    try:
+        image_status_request: ImageStatusRequest = ImageStatusRequest(**request.json)
+    except ValidationError:
+        return HTTPResponse("Invalid request body", status=400)
+
+    published = False
+    released = False
+
+    with ImageRepository() as repository:
+        image_filters: ImageFilterModel = ImageFilterModel(
+            image_name=image_status_request.image_name, released=None
+        )
+        images: list[Image] = repository.get_images(image_filters)
+
+        if images:
+            published = True
+            released = images[0].released
+
+    return json(ImageStatusResponse(published=published, released=released).json())
 
 
 @IMAGES_BLUEPRINT.route("/publish", methods=["POST"])

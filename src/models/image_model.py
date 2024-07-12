@@ -55,3 +55,20 @@ class ImageReleasePublishRequest(BaseModel):
     """
 
     image_name: str = Field(description="The name of the image")
+
+
+class ImageStatusRequest(BaseModel):
+    """
+    A pydantic model for getting the status of an image
+    """
+
+    image_name: str = Field(description="The name of the image")
+
+
+class ImageStatusResponse(BaseModel):
+    """
+    A pydantic model for the status of an image
+    """
+
+    published: bool = Field(description="Flag indicating if the image is published")
+    released: bool = Field(description="Flag indicating if the image is released")
