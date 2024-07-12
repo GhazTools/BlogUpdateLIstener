@@ -17,12 +17,13 @@ from sanic.response import HTTPResponse, text
 
 # LOCAL LIBRARY IMPORTS
 from src.utils.environment import Environment, EnvironmentVariableKeys
+from src.utils.vault_reader import VaultReader
 
 VAULT_BLUEPRINT = Blueprint("vault_blueprint", url_prefix="/vault")
 
 
 @VAULT_BLUEPRINT.post("/sync")
-async def sync_vault(_request: Request) -> HTTPResponse:
+async def sync_vault(request: Request) -> HTTPResponse:
     """
     A request to sync the vault
     """
@@ -33,6 +34,9 @@ async def sync_vault(_request: Request) -> HTTPResponse:
 
     try:
         run(["git", "-C", vault_path, "pull"], check=True)
+        vault_reader: VaultReader = request.app.config["VAULT_READER"]
+        vault_reader.reload_vault_reader()
+
     except CalledProcessError as e:
         print(f"Failed to pull updates from repository: {e}")
 
