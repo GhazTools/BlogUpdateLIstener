@@ -104,9 +104,8 @@ async def publish_image(request: Request) -> HTTPResponse:
     except ValidationError as e:
         logger.info("Could not valid publish request %s", e)
         return HTTPResponse("Invalid request body", status=400)
-
+    
     vault_reader: VaultReader = request.app.config["VAULT_READER"]
-    image_found: bool = False
     
     for image in vault_reader.images_to_add:
         if image.image_name == image_publish_request.image_name:
@@ -117,6 +116,7 @@ async def publish_image(request: Request) -> HTTPResponse:
             break
 
     if not image_found:
+        logger.info("image not found %s", image.image_found)
         return HTTPResponse("Image not found", status=404)
 
     return HTTPResponse("Image published", status=200)
