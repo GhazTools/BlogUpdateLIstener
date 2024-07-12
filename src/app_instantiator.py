@@ -13,6 +13,7 @@ from logging import Logger
 
 # THIRD PARTY LIBRARY IMPORTS
 from sanic import Sanic
+from sanic_cors import CORS
 
 # LOCAL LIBRARY IMPORTS
 from src.routes.blueprints import BLUEPRINTS
@@ -30,6 +31,7 @@ class AppInstantiator:
 
     def __init__(self: "AppInstantiator") -> None:
         self._app = Sanic("BlogUpdaterSvc")
+        CORS(self._app)
 
         logger: Logger = AppLogger.get_logger()
         logger.info("Attempting to start the application")
