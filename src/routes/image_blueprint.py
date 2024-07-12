@@ -150,20 +150,20 @@ async def update_image_release(request: Request) -> HTTPResponse:
     """
     Updates the release status of an image
     """
+    logger = AppLogger.get_logger()
+    
     try:
-        image_release_update_request: ImageReleaseUpdateRequest = (
-            ImageReleaseUpdateRequest(**request.json)
-        )
+        image_release_update_request: ImageReleaseUpdateRequest = ImageReleaseUpdateRequest(**request.json)
     except ValidationError:
+        logger.info("Could not valid update image release request %s", e)
         return HTTPResponse("Invalid request body", status=400)
+        
 
     with ImageRepository() as repository:
         try:
-            repository.update_release(
-                image_release_update_request.image_name,
-                image_release_update_request.released,
-            )
+            repository.update_release(image_release_update_request.image_name, image_release_update_request.release)
         except ValueError:
+            logger.info("Could not find image %s", image_release_update_request.image_name)
             return HTTPResponse("Image not found", status=404)
 
     return HTTPResponse("Image release status updated", status=200)

@@ -46,7 +46,7 @@ class ImageReleaseUpdateRequest(BaseModel):
     """
 
     image_name: str = Field(description="The name of the image")
-    released: bool = Field(description="Flag indicating if the image is released")
+    release: bool = Field(description="Flag indicating if the image is released")
 
 
 class ImageReleasePublishRequest(BaseModel):
