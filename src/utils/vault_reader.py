@@ -167,6 +167,8 @@ class VaultReader:
                     description=description,
                     text=text,
                     released=released,
+                    release_date=None,
+                    last_updated=None,
                 )
 
                 blog_posts.append(blog_post)
