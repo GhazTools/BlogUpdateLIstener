@@ -145,3 +145,26 @@ class ImageRepository:
         self.session.commit()
 
         return True
+
+    def delete_image(self: "ImageRepository", image_name: str) -> bool:
+        """
+        Delete an image from the database.
+
+        Args:
+            image_name: The name of the image to delete.
+
+        Returns:
+            True if the image was deleted, False otherwise.
+        """
+
+        image: Image | None = (
+            self.session.query(Image).filter(Image.image_name == image_name).first()
+        )
+
+        if image is None:
+            raise ValueError(f"Image not found: {image_name}")
+
+        self.session.delete(image)
+        self.session.commit()
+
+        return True

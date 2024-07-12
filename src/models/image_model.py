@@ -72,3 +72,11 @@ class ImageStatusResponse(BaseModel):
 
     published: bool = Field(description="Flag indicating if the image is published")
     released: bool = Field(description="Flag indicating if the image is released")
+
+
+class ImageDeleteRequest(BaseModel):
+    """
+    A pydantic model for deleting an image
+    """
+
+    image_name: str = Field(description="The name of the image")

@@ -25,6 +25,7 @@ from src.models.image_model import (
     ImageReleasePublishRequest,
     ImageStatusRequest,
     ImageStatusResponse,
+    ImageDeleteRequest,
 )
 
 from src.utils.vault_reader import VaultReader
@@ -173,3 +174,26 @@ async def update_image_release(request: Request) -> HTTPResponse:
             return HTTPResponse("Image not found", status=404)
 
     return HTTPResponse("Image release status updated", status=200)
+
+
+@IMAGES_BLUEPRINT.route("/delete", methods=["POST"])
+async def delete_image(request: Request) -> HTTPResponse:
+    """
+    Deletes an image from the database
+    """
+    logger = AppLogger.get_logger()
+
+    try:
+        image_delete_request: ImageDeleteRequest = ImageDeleteRequest(**request.json)
+    except ValidationError as e:
+        logger.info("Could not valid delete image request %s", e)
+        return HTTPResponse("Invalid request body", status=400)
+
+    with ImageRepository() as repository:
+        try:
+            repository.delete_image(image_delete_request.image_name)
+        except ValueError:
+            logger.info("Could not find image %s", image_delete_request.image_name)
+            return HTTPResponse("Image not found", status=404)
+
+    return HTTPResponse("Image deleted", status=200)
