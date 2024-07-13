@@ -23,6 +23,8 @@ from src.database.repositories.blog_post_repository import BlogPostRepository
 from src.models.blog_post_model import (
     BlogPostFilterModel,
     BlogPostReleaseUpdateRequest,
+    BlogPostStatusRequest,
+    BlogPostStatusResponse,
     BlogPostDeleteRequest,
 )
 from src.utils.logger import AppLogger
@@ -57,6 +59,39 @@ async def base_route(
     return HTTPResponse(
         body=blog_post.to_model().json(), content_type="application/json"
     )
+
+
+@BLOG_POSTS_BLUEPRINT.route("/blogPostStatus", methods=["POST"])
+async def get_blog_post_status(request: Request) -> HTTPResponse:
+    """
+    Gets the status of a blog post
+    """
+    logger = AppLogger.get_logger()
+
+    try:
+        status_request: BlogPostStatusRequest = BlogPostStatusRequest(**request.json)
+    except ValidationError as error:
+        logger.info("Could not validate blog post status request %s", error)
+        return HTTPResponse(f"Error: {error}", status=400)
+
+    published = False
+    released = False
+
+    with BlogPostRepository() as repository:
+        blog_posts_filter: BlogPostFilterModel = BlogPostFilterModel(
+            post_name=status_request.post_name,
+            description=None,
+            text=None,
+            released=None,
+        )
+
+        blog_posts: list[BlogPost] = repository.get_blog_posts(blog_posts_filter)
+
+        if blog_posts:
+            published = True
+            released = blog_posts[0].released
+
+    return json(BlogPostStatusResponse(published=published, released=released).json())
 
 
 @BLOG_POSTS_BLUEPRINT.route("/getBlogPost", methods=["POST"])
