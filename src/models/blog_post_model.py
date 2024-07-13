@@ -62,4 +62,4 @@ class BlogPostReleaseUpdateRequest(BaseModel):
     """
 
     post_name: str = Field(description="The name of the blog post")
-    released: bool = Field(description="Flag indicating if the blog post is released")
+    release: bool = Field(description="Flag indicating if the blog post is released")

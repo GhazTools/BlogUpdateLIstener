@@ -92,6 +92,6 @@ async def update_post_release(request: Request) -> HTTPResponse:
         return HTTPResponse(f"Error: {error}", status=400)
 
     with BlogPostRepository() as repository:
-        repository.update_release(update_request.post_name, update_request.released)
+        repository.update_release(update_request.post_name, update_request.release)
 
     return HTTPResponse("Blog post release status updated", status=200)
