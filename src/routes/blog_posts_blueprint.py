@@ -25,8 +25,10 @@ from src.models.blog_post_model import (
     BlogPostReleaseUpdateRequest,
     BlogPostStatusRequest,
     BlogPostStatusResponse,
+    BlogPostPublishRequest,
     BlogPostDeleteRequest,
 )
+from src.utils.vault_reader import VaultReader
 from src.utils.logger import AppLogger
 
 
@@ -92,6 +94,37 @@ async def get_blog_post_status(request: Request) -> HTTPResponse:
             released = blog_posts[0].released
 
     return json(BlogPostStatusResponse(published=published, released=released).json())
+
+
+@BLOG_POSTS_BLUEPRINT.route("/publish", methods=["POST"])
+async def publish_blog_post(request: Request) -> HTTPResponse:
+    """
+    Publishes a blog post
+    """
+    logger = AppLogger.get_logger()
+
+    try:
+        publish_request: BlogPostPublishRequest = BlogPostPublishRequest(**request.json)
+    except ValidationError as error:
+        logger.info("Could not validate publish blog post request %s", error)
+        return HTTPResponse(f"Error: {error}", status=400)
+
+    vault_reader: VaultReader = request.app.config["VAULT_READER"]
+    blog_post_found = False
+
+    for blog_post in vault_reader.blog_posts_to_add:
+        if blog_post.post_name == publish_request.post_name:
+            with BlogPostRepository() as repository:
+                repository.insert_blog_post(blog_post)
+
+            blog_post_found = True
+            break
+
+    if not blog_post_found:
+        logger.info("Blog post not found %s", blog_post.post_name)
+        return HTTPResponse("Blog post not found", status=404)
+
+    return HTTPResponse("Blog post published", status=200)
 
 
 @BLOG_POSTS_BLUEPRINT.route("/getBlogPost", methods=["POST"])

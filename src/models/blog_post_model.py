@@ -82,6 +82,14 @@ class BlogPostStatusResponse(BaseModel):
     released: bool = Field(description="Flag indicating if the blog post is released")
 
 
+class BlogPostPublishRequest(BaseModel):
+    """
+    A pydantic model for publishing a blog post
+    """
+
+    post_name: str = Field(description="The name of the blog post")
+
+
 class BlogPostDeleteRequest(BaseModel):
     """
     A pydantic model for deleting a blog post

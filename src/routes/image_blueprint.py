@@ -106,6 +106,7 @@ async def publish_image(request: Request) -> HTTPResponse:
         return HTTPResponse("Invalid request body", status=400)
 
     vault_reader: VaultReader = request.app.config["VAULT_READER"]
+    image_found = False
 
     for image in vault_reader.images_to_add:
         if image.image_name == image_publish_request.image_name:
