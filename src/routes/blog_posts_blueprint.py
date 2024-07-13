@@ -20,7 +20,12 @@ from pydantic import ValidationError
 from src.database.models.blog_post import BlogPost
 from src.database.repositories.blog_post_repository import BlogPostRepository
 
-from src.models.blog_post_model import BlogPostFilterModel, BlogPostReleaseUpdateRequest
+from src.models.blog_post_model import (
+    BlogPostFilterModel,
+    BlogPostReleaseUpdateRequest,
+    BlogPostDeleteRequest,
+)
+from src.utils.logger import AppLogger
 
 
 BLOG_POSTS_BLUEPRINT = Blueprint("blog_posts_blueprint", url_prefix="/blogPosts")
@@ -95,3 +100,26 @@ async def update_post_release(request: Request) -> HTTPResponse:
         repository.update_release(update_request.post_name, update_request.release)
 
     return HTTPResponse("Blog post release status updated", status=200)
+
+
+@BLOG_POSTS_BLUEPRINT.route("/delete", methods=["POST"])
+async def delete_blog_post(request: Request) -> HTTPResponse:
+    """
+    Deletes a blog post from the database
+    """
+    logger = AppLogger.get_logger()
+
+    try:
+        delete_request: BlogPostDeleteRequest = BlogPostDeleteRequest(**request.json)
+    except ValidationError as error:
+        logger.info("Could not validate delete blog post request %s", error)
+        return HTTPResponse(f"Error: {error}", status=400)
+
+    with BlogPostRepository() as repository:
+        try:
+            repository.delete_blog_post(delete_request.post_name)
+        except ValueError:
+            logger.info("Could not find blog post %s", delete_request.post_name)
+            return HTTPResponse("Blog post not found", status=404)
+
+    return HTTPResponse("Blog post deleted", status=200)
