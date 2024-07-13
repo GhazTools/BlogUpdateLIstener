@@ -174,3 +174,20 @@ class BlogPostRepository:
         self.session.commit()
 
         return True
+
+    def delete_blog_post(self: "BlogPostRepository", post_name: str) -> bool:
+        """
+        Delete a blog post from the database.
+        """
+
+        blog_post: BlogPost | None = (
+            self.session.query(BlogPost).filter(BlogPost.post_name == post_name).first()
+        )
+
+        if blog_post is None:
+            raise ValueError(f"Blog post not found: {post_name}")
+
+        self.session.delete(blog_post)
+        self.session.commit()
+
+        return True
